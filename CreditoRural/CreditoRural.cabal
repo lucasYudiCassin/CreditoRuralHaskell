@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Lib
+      User
   other-modules:
       Paths_CreditoRural
   hs-source-dirs:
