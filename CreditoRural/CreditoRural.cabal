@@ -25,8 +25,9 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Produto
       User
+      Workflow
   other-modules:
       Paths_CreditoRural
   hs-source-dirs:

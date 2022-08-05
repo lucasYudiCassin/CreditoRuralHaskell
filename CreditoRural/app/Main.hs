@@ -1,9 +1,7 @@
 module Main where
 
-
-import Lib
+import Produto
 import User
 
 main :: IO ()
-main = someFunc
-
+main = putStrLn "Hello"
