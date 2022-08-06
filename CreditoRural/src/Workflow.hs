@@ -1,25 +1,19 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
 module Workflow where
 
-import Data.Kind (Constraint)
-import System.Posix (isNamedPipe)
+import Contrato
+import Produto
 import User
 
--- data Estado = AguardandoDados | AnalisandoDados | Emissao | Liberado | Cancelado
-
-data IdEstado = Z | S IdEstado
-
--- type EstadoCompleto = IdEstado Estado
-
--- type AguardandoDados = (S Z) AguardandoDados
+data IdEstado = Z | S IdEstado deriving (Show)
 
 type Estado :: IdEstado -> *
 data Estado id where
@@ -27,14 +21,21 @@ data Estado id where
   AnalisandoDados :: Estado (S (S Z))
   Emissao :: Estado (S (S (S Z)))
   Liberado :: Estado (S (S (S (S Z))))
-  Cancelado :: Estado (S (S (S (S Z))))
 
-type Next :: IdEstado -> IdEstado -> Constraint
-class Next id1 id2
+deriving instance Show (Estado id)
 
-instance Next ('S 'Z) ('S ('S 'Z))
+nextEstado :: Estado id -> Maybe (Estado (S id))
+nextEstado AguardandoDados = Just AnalisandoDados
+nextEstado AnalisandoDados = Just Emissao
+nextEstado Emissao = Just Liberado
+nextEstado _ = Nothing
 
---instance Next (S (S Z)) (S (S (S Z)))
+verifyContrato :: Contrato -> Maybe (Estado id) -> Maybe (Estado (S id))
+verifyContrato _ Nothing = Nothing
+verifyContrato (MkContrato _ clie _ _ v p) (Just AnalisandoDados)
+  | getContratado clie + v <= getLimit p = nextEstado AnalisandoDados
+  | otherwise = Nothing
+verifyContrato c (Just x) = nextEstado x
 
--- transicao :: (Next id1 id2) => Estado id1 -> Estado id2
--- transicao AguardandoDados = AnalisandoDados
+teste :: Maybe (Estado ('S ('S ('S 'Z))))
+teste = verifyContrato c1 (Just AnalisandoDados)
