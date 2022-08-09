@@ -25,26 +25,36 @@ instance Show Geral where
 
 class Produto p where
   nome :: String
-  limite :: Double
+  limite :: Limite
   taxa :: Double
 
 instance Produto Pronamp where
   nome = "Pronamp"
-  limite = 1000
+  limite = MkLimite 1000
   taxa = 0.05
 
 instance Produto Pronaf where
   nome = "Pronaf"
-  limite = 100
+  limite = MkLimite 100
   taxa = 0.05
 
 instance Produto Geral where
   nome = "Geral"
-  limite = 100
+  limite = MkLimite 100
   taxa = 0.05
 
-calcularMBB :: forall p. (Produto p) => Proxy p -> Double -> Double
-calcularMBB _ v = taxa @p * v
+newtype MBB = MkMBB Double
+
+newtype Limite = MkLimite Double
+
+instance Show Limite where
+  show (MkLimite v) = show v
+
+instance Show MBB where
+  show (MkMBB v) = show v
+
+calcularMBB :: forall p. (Produto p) => Proxy p -> Double -> MBB
+calcularMBB _ v = MkMBB $ taxa @p * v
 
 toString :: forall p. (Produto p) => Proxy p -> String
 toString _ =
@@ -54,5 +64,5 @@ toString _ =
     ++ "\nTaxa: "
     ++ show (taxa @p)
 
-getLimit :: forall p. (Produto p) => Proxy p -> Double
+getLimit :: forall p. (Produto p) => Proxy p -> Limite
 getLimit _ = limite @p

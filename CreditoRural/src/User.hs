@@ -13,7 +13,12 @@ data User t where
   MkGerVenda :: String -> Int -> User GerVenda
   MkGerBack :: String -> Int -> User GerBack
 
-deriving instance Show (User t)
+-- deriving instance Show (User t)
+
+instance Show (User t) where
+  show (MkCliente n id) = "Nome Cliente (" ++ show id ++ "): " ++ n
+  show (MkGerVenda n id) = "Nome Ger. Venda (" ++ show id ++ "): " ++ n
+  show (MkGerBack n id) = "Nome Ger. Emissao (" ++ show id ++ "): " ++ n
 
 getContratado :: User Cliente -> Double
 getContratado (MkCliente _ 1) = 100

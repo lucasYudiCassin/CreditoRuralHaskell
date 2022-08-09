@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -30,12 +31,24 @@ nextEstado AnalisandoDados = Just Emissao
 nextEstado Emissao = Just Liberado
 nextEstado _ = Nothing
 
-verifyContrato :: Contrato -> Maybe (Estado id) -> Maybe (Estado (S id))
+data ExEstado where
+  MkExEstado :: Estado id -> ExEstado
+
+deriving instance Show ExEstado
+
+helpExEstado :: Maybe (Estado id) -> Maybe ExEstado
+helpExEstado Nothing = Nothing
+helpExEstado (Just e) = Just $ MkExEstado e
+
+compareLimit :: Double -> Limite -> Bool
+compareLimit v (MkLimite d) = v <= d
+
+verifyContrato :: Contrato -> Maybe (Estado id) -> Maybe ExEstado
 verifyContrato _ Nothing = Nothing
 verifyContrato (MkContrato _ clie _ _ v p) (Just AnalisandoDados)
-  | getContratado clie + v <= getLimit p = nextEstado AnalisandoDados
+  | compareLimit (getContratado clie + v) (getLimit p) = helpExEstado $ nextEstado AnalisandoDados
   | otherwise = Nothing
-verifyContrato c (Just x) = nextEstado x
+verifyContrato c (Just x) = helpExEstado $ nextEstado x
 
-teste :: Maybe (Estado ('S ('S ('S 'Z))))
-teste = verifyContrato c1 (Just AnalisandoDados)
+teste :: Contrato -> Estado id -> Maybe ExEstado
+teste c e = verifyContrato c (Just e)
