@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE StandaloneKindSignatures #-}
 
 module User where
@@ -13,23 +12,15 @@ data User t where
   MkGerVenda :: String -> Int -> User GerVenda
   MkGerBack :: String -> Int -> User GerBack
 
--- deriving instance Show (User t)
+instance Eq (User t) where
+  (MkCliente _ id1) == (MkCliente _ id2) = id1 == id2
+  (MkGerVenda _ id1) == (MkGerVenda _ id2) = id1 == id2
+  (MkGerBack _ id1) == (MkGerBack _ id2) = id1 == id2
 
 instance Show (User t) where
   show (MkCliente n id) = "Nome Cliente (" ++ show id ++ "): " ++ n
   show (MkGerVenda n id) = "Nome Ger. Venda (" ++ show id ++ "): " ++ n
   show (MkGerBack n id) = "Nome Ger. Emissao (" ++ show id ++ "): " ++ n
-
-getContratado :: User Cliente -> Double
-getContratado (MkCliente _ 1) = 100
-getContratado (MkCliente _ 2) = 100
-getContratado (MkCliente _ 3) = 100
-getContratado (MkCliente _ _) = 100
-
--- instance Show (User t) where
---     show (User Cliente) :: "Cliente"
---     show (User GerVenda) :: "Vendedor"
---     show _ :: "Outros"
 
 -- Quando um gerente é designado para um contrato, somente ele pode atuar no contrato
 -- Ter algum tipo de validador de usuário

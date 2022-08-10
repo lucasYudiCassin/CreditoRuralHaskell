@@ -11,6 +11,8 @@
 module Workflow where
 
 import Contrato
+import Database
+import Documentos
 import Produto
 import User
 
@@ -18,15 +20,13 @@ data IdEstado = Z | S IdEstado deriving (Show)
 
 type Estado :: IdEstado -> *
 data Estado id where
-  AguardandoDados :: Estado (S Z)
-  AnalisandoDados :: Estado (S (S Z))
-  Emissao :: Estado (S (S (S Z)))
-  Liberado :: Estado (S (S (S (S Z))))
+  AnalisandoDados :: Estado (S Z)
+  Emissao :: Estado (S (S Z))
+  Liberado :: Estado (S (S (S Z)))
 
 deriving instance Show (Estado id)
 
 nextEstado :: Estado id -> Maybe (Estado (S id))
-nextEstado AguardandoDados = Just AnalisandoDados
 nextEstado AnalisandoDados = Just Emissao
 nextEstado Emissao = Just Liberado
 nextEstado _ = Nothing
@@ -36,19 +36,21 @@ data ExEstado where
 
 deriving instance Show ExEstado
 
-helpExEstado :: Maybe (Estado id) -> Maybe ExEstado
-helpExEstado Nothing = Nothing
-helpExEstado (Just e) = Just $ MkExEstado e
+data Aprovado
 
-compareLimit :: Double -> Limite -> Bool
-compareLimit v (MkLimite d) = v <= d
+data Reprovado
 
-verifyContrato :: Contrato -> Maybe (Estado id) -> Maybe ExEstado
-verifyContrato _ Nothing = Nothing
-verifyContrato (MkContrato _ clie _ _ v p) (Just AnalisandoDados)
-  | compareLimit (getContratado clie + v) (getLimit p) = helpExEstado $ nextEstado AnalisandoDados
-  | otherwise = Nothing
-verifyContrato c (Just x) = helpExEstado $ nextEstado x
+type Resultado :: Maybe ExEstado -> *
+--type Resultado :: Maybe ExEstado -> *
+type family Resultado a where
+  Resultado (Just (MkExEstado Liberado)) = Aprovado
+  Resultado _ = Reprovado
 
-teste :: Contrato -> Estado id -> Maybe ExEstado
-teste c e = verifyContrato c (Just e)
+-- Resultado Nothing = Reprovado
+
+-- type Teste :: User t -> *
+-- type family Teste t where
+--   Teste (User Cliente) = Aprovado
+--   Teste GerVenda = Reprovado
+
+-- passarPeloWF :: Contrato -> Resultado (Maybe (MkExEstado Liberado))
