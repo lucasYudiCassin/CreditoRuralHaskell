@@ -2,11 +2,13 @@ module Main where
 
 import Contrato
 import Database
-import Produto
-import User
 import VerifyContrato
-import Workflow
 import Workflow (ExEstado)
+
+-- import Produto
+-- import User
+-- import VerifyContrato
+-- import Workflow
 
 -- u1 = MkCliente "Lucas" 1
 
@@ -23,9 +25,6 @@ import Workflow (ExEstado)
 -- c1 = MkContratoPronamp u1 v1 e1 100
 teste :: Contrato -> Maybe ExEstado
 teste = runContrato
-
-teste2 :: Contrato -> Maybe ExEstado
-teste2 c = verifyLimit c AnalisandoDados
 
 main :: IO ()
 main = putStrLn ""

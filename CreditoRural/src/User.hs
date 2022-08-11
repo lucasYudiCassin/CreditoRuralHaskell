@@ -4,8 +4,10 @@
 
 module User where
 
+-- TipoUser para ser usado no usuário
 data TipoUser = Cliente | GerVenda | GerBack
 
+-- Tipo User que está vinculado a um tipo de usuário
 type User :: TipoUser -> *
 data User t where
   MkCliente :: String -> Int -> User Cliente

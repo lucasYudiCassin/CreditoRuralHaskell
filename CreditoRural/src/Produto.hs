@@ -8,6 +8,7 @@ module Produto where
 
 import Data.Proxy (Proxy (Proxy))
 
+-- Tipos vazios para os produtos
 data Pronamp
 
 data Pronaf
@@ -23,6 +24,7 @@ instance Show Pronaf where
 instance Show Geral where
   show _ = "Geral"
 
+-- Classe produto e instâncias para os produtos
 class Produto p where
   nome :: String
   limite :: Limite
@@ -43,6 +45,7 @@ instance Produto Geral where
   limite = MkLimite 100
   taxa = 0.05
 
+-- Tipos MBB e Limite
 newtype MBB = MkMBB Double
 
 newtype Limite = MkLimite Double

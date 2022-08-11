@@ -1,22 +1,21 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE StandaloneKindSignatures #-}
-{-# LANGUAGE TypeOperators #-}
 
-module Contrato where
+module Contrato (Contrato (..)) where
 
 import Data.Proxy (Proxy (Proxy))
-import Documentos
-import Produto
-import User
+import Documentos (CAR, DocList, Matricula)
+import Funding (Funding)
+import Produto (MBB, Produto, calcularMBB, toString)
+import User (TipoUser (Cliente, GerBack, GerVenda), User)
 
+-- Tipo Contrato contendo o ID do contrato, um cliente, gerente de venda, gerente do back, valor do contrato, Proxy do produto, lista de documentos contendo Matricula e CAR e o Fundind da Operação
 data Contrato where
-  MkContrato :: forall p. (Show p, Produto p) => Int -> User Cliente -> User GerVenda -> User GerBack -> Double -> Proxy p -> DocList [Matricula, CAR] -> Contrato
+  MkContrato :: forall p. (Show p, Produto p) => Int -> User Cliente -> User GerVenda -> User GerBack -> Double -> Proxy p -> DocList [Matricula, CAR] -> Funding p -> Contrato
 
 instance Show Contrato where
-  show ctr@(MkContrato id c ve b vl p docList) =
+  show ctr@(MkContrato id c ve b vl p docList f) =
     "Contrato (" ++ show id ++ "):\n"
       ++ show c
       ++ "\n"
@@ -25,10 +24,13 @@ instance Show Contrato where
       ++ show b
       ++ "\n"
       ++ toString p
+      ++ "\nFunding: "
+      ++ show f
       ++ "\nValor: "
       ++ show vl
       ++ "\nResultado: "
       ++ show (resultadoContrato ctr)
 
+-- Função para capturar o resultado esperado do contrato
 resultadoContrato :: Contrato -> MBB
-resultadoContrato (MkContrato _ _ _ _ v p docList) = calcularMBB p v
+resultadoContrato (MkContrato _ _ _ _ v p docList _) = calcularMBB p v

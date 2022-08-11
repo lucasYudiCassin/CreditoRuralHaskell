@@ -26,9 +26,12 @@ source-repository head
 library
   exposed-modules:
       Contrato
+      Database
       Documentos
+      Funding
       Produto
       User
+      VerifyContrato
       Workflow
   other-modules:
       Paths_CreditoRural
