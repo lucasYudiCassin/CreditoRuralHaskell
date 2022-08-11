@@ -16,21 +16,18 @@ import Documentos
 import Produto (Limite (..), getLimit)
 import User (TipoUser (Cliente), User)
 import Workflow
-  ( Estado (AnalisandoDados, Emissao),
-    ExEstado (..),
+  ( AnalisandoDadosT,
+    EmissaoT,
+    Estado (AnalisandoDados, Emissao),
     IdEstado (S, Z),
+    LiberadoT,
     nextEstado,
   )
 
--- Função para passar de um Maybe Estado para Maybe ExEstado
-helpExEstado :: Maybe (Estado id) -> Maybe ExEstado
-helpExEstado Nothing = Nothing
-helpExEstado (Just e) = Just $ MkExEstado e
-
 -- Função para comparar o limite tomado pelo usuário com o valor do contrato. Apenas em um determinado estado
-verifyLimit :: Contrato -> Estado (S Z) -> Maybe ExEstado
+verifyLimit :: Contrato -> AnalisandoDadosT -> Maybe EmissaoT
 verifyLimit (MkContrato _ clie _ _ v p _ _) e
-  | compareLimit (getContratado clie + v) (getLimit p) = helpExEstado $ nextEstado e
+  | compareLimit (getContratado clie + v) (getLimit p) = nextEstado e
   | otherwise = Nothing
 
 -- Função auxiliar na comparação de limite
@@ -46,18 +43,18 @@ getClieCAR :: DocList [Matricula, CAR] -> User Cliente
 getClieCAR (DCons m (DCons c DEmpty)) = clieDoCAR c
 
 -- Função para verificar os documentos do contrato. Apenas em um determinado estado
-verifyDocs :: Contrato -> Estado (S (S Z)) -> Maybe ExEstado
+verifyDocs :: Contrato -> EmissaoT -> Maybe LiberadoT
 verifyDocs (MkContrato _ clie _ _ _ _ docList _) e
-  | (clie == getClieMatricula docList) && (clie == getClieCAR docList) = helpExEstado $ nextEstado e
+  | (clie == getClieMatricula docList) && (clie == getClieCAR docList) = nextEstado e
   | otherwise = Nothing
 
 -- Função para dado um estado passar para o próximo, apenas se passar na validação
-verifyContrato :: Contrato -> Maybe ExEstado -> Maybe ExEstado
+verifyContrato :: Contrato -> Maybe (Estado id) -> Maybe (Estado (S id))
 verifyContrato _ Nothing = Nothing
-verifyContrato c (Just (MkExEstado e@AnalisandoDados)) = verifyLimit c e
-verifyContrato c (Just (MkExEstado e@Emissao)) = verifyDocs c e
+verifyContrato c (Just e@AnalisandoDados) = verifyLimit c e
+verifyContrato c (Just e@Emissao) = verifyDocs c e
 verifyContrato _ _ = Nothing
 
--- TODO: Garantir que termine no estado correto
-runContrato :: Contrato -> Maybe ExEstado
-runContrato c = verifyContrato c (verifyContrato c (Just $ MkExEstado AnalisandoDados))
+-- Função que passa o contrato pelo workflow, e garante chegar na etapa de liberação
+runContrato :: Contrato -> Maybe LiberadoT
+runContrato c = verifyContrato c (verifyContrato c (Just AnalisandoDados))
