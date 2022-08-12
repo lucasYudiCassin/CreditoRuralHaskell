@@ -15,23 +15,30 @@ import User ()
 -- Tipo para criar um ID do estado
 data IdEstado = Z | S IdEstado deriving (Show)
 
-type AnalisandoDadosT = Estado (S Z)
+type AnalisandoDadosID = Z
 
-type EmissaoT = Estado (S (S Z))
+type EmissaoID = S (S Z)
 
-type LiberadoT = Estado (S (S (S Z)))
+type LiberadoID = S (S (S Z))
 
 -- Tipo Estado com seu ID
 type Estado :: IdEstado -> *
 data Estado id where
-  AnalisandoDados :: AnalisandoDadosT
-  Emissao :: EmissaoT
-  Liberado :: LiberadoT
+  AnalisandoDados :: Estado AnalisandoDadosID
+  Emissao :: Estado EmissaoID
+  Liberado :: Estado LiberadoID
 
 deriving instance Show (Estado id)
 
+type ProximoEstado :: IdEstado -> *
+type family ProximoEstado a
+
+type instance ProximoEstado AnalisandoDadosID = Estado EmissaoID
+
+type instance ProximoEstado EmissaoID = Estado LiberadoID
+
 -- Função para definir o proximo estado
-nextEstado :: Estado id -> Maybe (Estado (S id))
+nextEstado :: Estado id -> Maybe (ProximoEstado id)
 nextEstado AnalisandoDados = Just Emissao
 nextEstado Emissao = Just Liberado
 nextEstado _ = Nothing
