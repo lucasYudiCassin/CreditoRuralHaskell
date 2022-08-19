@@ -4,12 +4,12 @@
 
 module Database where
 
-import Contrato
+import Contrato (Contrato (..))
 import Data.Proxy (Proxy (Proxy))
-import Documentos
-import Funding
-import Produto
-import User
+import Documentos (CAR (..), DocList (..), Matricula (..))
+import Funding (Funding (LCA, PoupancaRural))
+import Produto (Pronaf, Pronamp)
+import User (TipoUser (Cliente, GerBack, GerVenda), User (..))
 
 -- Criando usuários
 u1 :: User 'Cliente
