@@ -32,17 +32,17 @@ class Produto p where
 
 instance Produto Pronamp where
   nome = "Pronamp"
-  limite = MkLimite 1000
+  limite = MkLimite 3000000
   taxa = 0.05
 
 instance Produto Pronaf where
   nome = "Pronaf"
-  limite = MkLimite 100
+  limite = MkLimite 150000
   taxa = 0.05
 
 instance Produto Geral where
   nome = "Geral"
-  limite = MkLimite 100
+  limite = MkLimite 8000000
   taxa = 0.05
 
 -- Tipos MBB e Limite

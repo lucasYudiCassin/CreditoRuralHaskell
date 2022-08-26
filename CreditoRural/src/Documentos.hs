@@ -33,3 +33,11 @@ clieDaMatricula (MkMatricula u _) = u
 -- Função auxiliar para pegar o cliente vinculado ao CAR
 clieDoCAR :: CAR -> User Cliente
 clieDoCAR (MkCAR u _) = u
+
+-- Pegar a matricula de uma lista de documentos
+getClieMatricula :: DocList [Matricula, CAR] -> User Cliente
+getClieMatricula (DCons x xs) = clieDaMatricula x
+
+-- Pegar o CAR de uma lista de documentos
+getClieCAR :: DocList [Matricula, CAR] -> User Cliente
+getClieCAR (DCons m (DCons c DEmpty)) = clieDoCAR c

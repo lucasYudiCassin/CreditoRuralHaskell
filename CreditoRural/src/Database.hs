@@ -4,11 +4,11 @@
 
 module Database where
 
-import Contrato (Contrato (..))
+import Contrato
 import Data.Proxy (Proxy (Proxy))
 import Documentos (CAR (..), DocList (..), Matricula (..))
-import Funding (Funding (LCA, PoupancaRural))
-import Produto (Pronaf, Pronamp)
+import Funding (Funding (DAV, LCA, PoupancaRural))
+import Produto (Geral, Pronaf, Pronamp)
 import User (TipoUser (Cliente, GerBack, GerVenda), User (..))
 
 -- Criando usuários
@@ -59,14 +59,22 @@ dl4 = DCons car2 DEmpty
 
 -- Criando contratos
 c1 :: Contrato
-c1 = MkContrato 1 u1 v1 b1 100 (Proxy @Pronamp) dl1 LCA
+c1 = MkContrato 1 u1 v1 b1 1000000 (Proxy @Pronamp) dl1 LCA
 
 c2 :: Contrato
-c2 = MkContrato 2 u1 v1 b1 100 (Proxy @Pronaf) dl2 PoupancaRural
+c2 = MkContrato 2 u2 v2 b1 600000 (Proxy @Pronaf) dl2 PoupancaRural
+
+c3 :: Contrato
+c3 = MkContrato 3 u3 v1 b1 1500000 (Proxy @Geral) dl1 DAV
 
 -- Pegar o valor contratado do cliente no mercado
 getContratado :: User Cliente -> Double
-getContratado (MkCliente _ 1) = 100
-getContratado (MkCliente _ 2) = 100
-getContratado (MkCliente _ 3) = 100
-getContratado (MkCliente _ _) = 100
+getContratado (MkCliente _ 1) = 1000000
+getContratado (MkCliente _ 2) = 2000000
+getContratado (MkCliente _ 3) = 1500000
+getContratado (MkCliente _ _) = 1000000
+
+{-
+c4 :: Contrato
+c4 = MkContrato 4 u1 b1 b1 1000000 (Proxy @Pronamp) dl4 DAV
+-}

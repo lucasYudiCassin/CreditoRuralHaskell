@@ -5,22 +5,13 @@ import Database
 import VerifyContrato
 import Workflow
 
-teste :: Contrato -> Maybe (Estado LiberadoID)
-teste = runContrato
-
 main :: IO ()
 main = do
-  print $ teste c1
-  print $ teste c2
-
--- Polimorfismo (OK)
--- Tipos de dados algébricos (OK)
--- Tipos fantasmas
--- Tipos, Kinds, Sorts (OK)
--- GADTs (OK)
--- Singleton (OK)
--- Tipos existenciais
--- Type Family
--- Open Type Family (OK)
--- Tipos associados
--- Data family
+  print c1
+  print $ runContrato c1
+  print "------------------------------"
+  print c2
+  print $ runContrato c2
+  print "------------------------------"
+  print c3
+  print $ runContrato c3

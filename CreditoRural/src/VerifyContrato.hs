@@ -16,6 +16,8 @@ import Documentos
     Matricula,
     clieDaMatricula,
     clieDoCAR,
+    getClieCAR,
+    getClieMatricula,
   )
 import Produto (Limite (..), getLimit)
 import User (TipoUser (Cliente), User)
@@ -31,14 +33,6 @@ verifyLimit (MkContrato _ clie _ _ v p _ _) e
 compareLimit :: Double -> Limite -> Bool
 compareLimit v (MkLimite d) = v <= d
 
--- Pegar a matricula de uma lista de documentos
-getClieMatricula :: DocList [Matricula, CAR] -> User Cliente
-getClieMatricula (DCons x xs) = clieDaMatricula x
-
--- Pegar o CAR de uma lista de documentos
-getClieCAR :: DocList [Matricula, CAR] -> User Cliente
-getClieCAR (DCons m (DCons c DEmpty)) = clieDoCAR c
-
 -- Função para verificar os documentos do contrato. Apenas em um determinado estado
 verifyDocs :: Contrato -> Estado EmissaoID -> Maybe (ProximoEstado EmissaoID)
 verifyDocs (MkContrato _ clie _ _ _ _ docList _) e
@@ -51,6 +45,8 @@ verifyContrato _ Nothing = Nothing
 verifyContrato c (Just e@AnalisandoDados) = verifyLimit c e
 verifyContrato c (Just e@Emissao) = verifyDocs c e
 verifyContrato _ _ = Nothing
+
+--verifyContrato _ (Just AnalisandoDados) = Just Liberado
 
 -- Função que passa o contrato pelo workflow, e garante chegar na etapa de liberação
 runContrato :: Contrato -> Maybe (Estado LiberadoID)

@@ -2,10 +2,10 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Contrato (Contrato (..)) where
+module Contrato where
 
 import Data.Proxy (Proxy (Proxy))
-import Documentos (CAR, DocList, Matricula)
+import Documentos (CAR, DocList, Matricula, getClieCAR, getClieMatricula)
 import Funding (Funding)
 import Produto (MBB, Produto, calcularMBB, toString)
 import User (TipoUser (Cliente, GerBack, GerVenda), User)
@@ -30,6 +30,10 @@ instance Show Contrato where
       ++ show vl
       ++ "\nResultado: "
       ++ show (resultadoContrato ctr)
+      ++ "\nMatricula: "
+      ++ show (getClieMatricula docList)
+      ++ "\nCAR: "
+      ++ show (getClieCAR docList)
 
 -- Função para capturar o resultado esperado do contrato
 resultadoContrato :: Contrato -> MBB
